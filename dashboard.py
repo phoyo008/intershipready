@@ -53,13 +53,20 @@ with tab3:
 
 
 with tab4:
-    st.header("NASA's Astronomy Picture of the Days")
+    st.header("NASA's Astronomy Picture of the Day")
 
     url = "https://api.nasa.gov/planetary/apod?api_key="
-    response = apod_generator(url, os.getenv("NASA_API_KEY"))
+    
+    # Use st.secrets instead of os.getenv
+    api_key = st.secrets.get("NASA_API_KEY")
 
-    response = apod_generator(url, os.getenv("NASA_API_KEY"))
-    st.title(response["title"])
-    st.image(response["url"])
-    st.write(response["explanation"])
-
+    if api_key:
+        try:
+            response = apod_generator(url, api_key)
+            st.title(response["title"])
+            st.image(response["url"])
+            st.write(response["explanation"])
+        except Exception as e:
+            st.error(f"Failed to fetch APOD: {e}")
+    else:
+        st.warning("NASA_API_KEY not found. Please add it to your Streamlit Secrets.")
